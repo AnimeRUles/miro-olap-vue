@@ -2,7 +2,7 @@ import Vue    from 'vue'
 import App    from './Index.vue'
 import common from './common'
 
-common.registerHotReload('index')
+common.registerHotReload()
 
 Vue.config.productionTip = false
 

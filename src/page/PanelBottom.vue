@@ -1,39 +1,34 @@
 <template>
     <div id="app">
-        <div class="btn prev-button">
-            <el-switch v-model="isEnabled"/>
-        </div>
+        <el-switch v-model="settings.isEnabled"/>
     </div>
 </template>
 
 <script>
-    import common from './common'
+    import common       from './common'
+    import common_mixin from './common_mixin'
 
     export default {
         name      : 'PanelBottom',
         components: {},
+        mixins    : [common_mixin],
 
         data() {
-            return {
-                isEnabled: false
-            }
+            return {}
         },
 
-        computed: {
-
-        },
-
-        watch: {
-            isEnabled: function (value) {
-                console.log('isEnabled', value)
-            }
-        },
+        computed: {},
 
         mounted() {
-            if (common.isHotReload('panelBottom')) return
+            if (common.isHotReload()) return
         }
     }
 </script>
 
 <style>
+    #app {
+        display         : flex;
+        justify-content : center;
+        align-items     : center;
+    }
 </style>

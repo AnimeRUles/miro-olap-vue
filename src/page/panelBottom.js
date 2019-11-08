@@ -1,10 +1,12 @@
 import Vue    from 'vue'
+
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
+
 import App    from './PanelBottom.vue'
 import common from './common'
 
-common.registerHotReload('panelBottom')
+common.registerHotReload()
 
 Vue.use(ElementUI);
 
