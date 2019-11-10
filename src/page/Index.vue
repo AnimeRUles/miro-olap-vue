@@ -25,7 +25,7 @@
             init() {
                 miro.onReady(() => {
                     if (this.isDevelopment()) {
-                        miro.board.ui.openBottomPanel('panelBottom.html', {width: 60})
+                        miro.board.ui.openBottomPanel('bottom-panel.html', {width: 60})
                     }
 
                     let svgIcon = (this.isDevelopment()
@@ -40,7 +40,7 @@
                                 title  : 'ОЛАП',
                                 svgIcon,
                                 onClick: function () {
-                                    miro.board.ui.openBottomPanel('panelBottom.html', {width: 60})
+                                    miro.board.ui.openBottomPanel('bottom-panel.html', {width: 60})
                                 }
                             }
                         }
@@ -51,8 +51,6 @@
             },
 
             async SELECTION_UPDATED(e) {
-                this.log('this.settings.isEnabled', this.settings.isEnabled)
-
                 if (this.settings.isEnabled) {
                     if (!e.data.length) {
                         await this.showWidget()

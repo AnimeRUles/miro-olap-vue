@@ -11,11 +11,13 @@ module.exports = {
     pages       : {
         index      : {
             entry   : 'src/page/index.js',
-            template: 'public/index.html'
+            template: 'public/index.html',
+            filename: 'index.html',
         },
         panelBottom: {
             entry   : 'src/page/panelBottom.js',
-            template: 'public/index.html'
+            template: 'public/index.html',
+            filename: 'bottom-panel.html',
         },
     },
     chainWebpack: config => {
