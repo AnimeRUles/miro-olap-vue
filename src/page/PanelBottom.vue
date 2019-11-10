@@ -5,13 +5,11 @@
 </template>
 
 <script>
-    import common       from './common'
-    import common_mixin from './common_mixin'
+    import common from '../common'
 
     export default {
         name      : 'PanelBottom',
         components: {},
-        mixins    : [common_mixin],
 
         data() {
             return {}
@@ -20,7 +18,7 @@
         computed: {},
 
         mounted() {
-            if (common.isHotReload()) return
+            if (this.isDevelopment() && common.isHotReload()) return
         }
     }
 </script>

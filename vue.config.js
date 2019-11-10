@@ -1,12 +1,14 @@
+const path = require('path');
+
 module.exports = {
     // lintOnSave: false,
-    devServer: {
+    devServer   : {
         https  : true,
         headers: {
             'Access-Control-Allow-Origin': '*'
         },
     },
-    pages    : {
+    pages       : {
         index      : {
             entry   : 'src/page/index.js',
             template: 'public/index.html'
@@ -15,5 +17,8 @@ module.exports = {
             entry   : 'src/page/panelBottom.js',
             template: 'public/index.html'
         },
-    }
+    },
+    chainWebpack: config => {
+        config.resolve.alias.set('@', path.resolve(__dirname, 'src'));
+    },
 }
