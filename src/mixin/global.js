@@ -1,4 +1,5 @@
-import common from '@/common'
+import common    from '@/common'
+import {isEmpty} from 'lodash'
 
 export default {
     data() {
@@ -16,6 +17,7 @@ export default {
             handler(val) {
                 if (this.isSettingsBroadcastThrow) {
                     this.isSettingsBroadcastSet = false
+                    miro.__setRuntimeState(val)
                     miro.broadcastData(val).then(() => {
                         this.isSettingsBroadcastSet = true
                     })
@@ -25,7 +27,16 @@ export default {
         }
     },
 
-    mounted() {
+    async mounted() {
+        miro.onReady(async () => {
+            let state = await miro.__getRuntimeState()
+            if (isEmpty(state)) {
+                await miro.__setRuntimeState(this.settings)
+            } else {
+                this.settings = state
+            }
+        })
+
         if (this.isDevelopment() && common.isHotReload()) return
 
         miro.onReady(() => {
@@ -36,7 +47,6 @@ export default {
     },
 
     methods: {
-
         DATA_BROADCASTED(data) {
             if (this.isSettingsBroadcastSet) {
                 this.isSettingsBroadcastThrow = false

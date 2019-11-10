@@ -5,8 +5,6 @@
 </template>
 
 <script>
-    import common from '../common'
-
     export default {
         name      : 'PanelBottom',
         components: {},
@@ -17,9 +15,7 @@
 
         computed: {},
 
-        mounted() {
-            if (this.isDevelopment() && common.isHotReload()) return
-        }
+        mounted() {}
     }
 </script>
 
