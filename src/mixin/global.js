@@ -1,4 +1,4 @@
-import common from './common'
+import common from '@/common'
 
 export default {
     data() {
@@ -26,7 +26,7 @@ export default {
     },
 
     mounted() {
-        if (common.isHotReload()) return
+        if (this.isDevelopment() && common.isHotReload()) return
 
         miro.onReady(() => {
             miro.addListener('DATA_BROADCASTED', data => {
@@ -36,9 +36,6 @@ export default {
     },
 
     methods: {
-        log(...val) {
-            console.log(this.$el.baseURI, val)
-        },
 
         DATA_BROADCASTED(data) {
             if (this.isSettingsBroadcastSet) {
@@ -49,6 +46,26 @@ export default {
                 }).then(result => {
                     this.isSettingsBroadcastThrow = true
                 })
+            }
+        },
+
+        log(...val) {
+            console.log(...val, this.$el.baseURI)
+        },
+
+        isDevelopment() {
+            return (process.env.NODE_ENV === 'development')
+        },
+
+        getArray(val) {
+            switch (true) {
+                case val === null:
+                case val === undefined:
+                    return []
+                case Array.isArray(val):
+                    return val
+                default :
+                    return [val]
             }
         },
     },
