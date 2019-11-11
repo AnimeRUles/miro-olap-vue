@@ -35,15 +35,13 @@ export default {
             } else {
                 this.settings = state
             }
-        })
 
-        if (this.isDevelopment() && common.isHotReload()) return
-
-        miro.onReady(() => {
-            miro.addListener('DATA_BROADCASTED', data => {
-                this.DATA_BROADCASTED(data)
-            })
+            miro.addListener('DATA_BROADCASTED', this.DATA_BROADCASTED)
         })
+    },
+
+    destroyed(){
+        miro.removeListener('DATA_BROADCASTED', this.DATA_BROADCASTED)
     },
 
     methods: {
@@ -77,6 +75,26 @@ export default {
                 default :
                     return [val]
             }
+        },
+
+        async getWidgetById(id){
+            let w_ = await miro.board.widgets.get({id})
+
+            if (w_.length) {
+                return w_[0]
+            }
+
+            return null
+        },
+
+        async getWidgetSelectFirst(){
+            let w_ = await miro.board.selection.get()
+
+            if (w_.length) {
+                return w_[0]
+            }
+
+            return null
         },
     },
 }

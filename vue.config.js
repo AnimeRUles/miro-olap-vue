@@ -15,9 +15,14 @@ module.exports = {
             filename: 'index.html',
         },
         panelBottom: {
-            entry   : 'src/page/panelBottom.js',
+            entry   : 'src/page/bottomBar.js',
             template: 'public/index.html',
-            filename: 'bottom-panel.html',
+            filename: 'bottom-bar.html',
+        },
+        leftSidebar: {
+            entry   : 'src/page/leftSidebar.js',
+            template: 'public/index.html',
+            filename: 'left-sidebar.html',
         },
     },
     chainWebpack: config => {
