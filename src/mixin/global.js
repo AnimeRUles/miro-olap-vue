@@ -40,7 +40,7 @@ export default {
         })
     },
 
-    destroyed(){
+    destroyed() {
         miro.removeListener('DATA_BROADCASTED', this.DATA_BROADCASTED)
     },
 
@@ -77,7 +77,7 @@ export default {
             }
         },
 
-        async getWidgetById(id){
+        async getWidgetById(id) {
             let w_ = await miro.board.widgets.get({id})
 
             if (w_.length) {
@@ -87,7 +87,7 @@ export default {
             return null
         },
 
-        async getWidgetSelectFirst(){
+        async getWidgetSelectFirst() {
             let w_ = await miro.board.selection.get()
 
             if (w_.length) {
