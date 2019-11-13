@@ -115,7 +115,7 @@
                 await miro.board.widgets.update(wEnd)
 
                 await miro.board.widgets.sendBackward(w)
-                await miro.board.selection.selectWidgets(w)
+                // await miro.board.selection.selectWidgets(w)
             },
 
             createTagHtmlElement(wTag) {
