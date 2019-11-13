@@ -1,5 +1,9 @@
-import common    from '@/common'
-import {isEmpty} from 'lodash'
+import common   from '@/common'
+import {
+    isEmpty,
+    each
+}               from 'lodash'
+import constant from '@/constant'
 
 export default {
     data() {
@@ -7,7 +11,10 @@ export default {
             isSettingsBroadcastThrow: true,
             isSettingsBroadcastSet  : true,
             settings                : {
-                isEnabled: false
+                isEnabled: false,
+                hide     : {
+                    lineTagIs: true
+                }
             }
         }
     },
@@ -17,7 +24,8 @@ export default {
             handler(val) {
                 if (this.isSettingsBroadcastThrow) {
                     this.isSettingsBroadcastSet = false
-                    miro.__setRuntimeState(val)
+                    sessionStorage.setItem('settings', JSON.stringify(val))
+                    // miro.__setRuntimeState(val)
                     miro.broadcastData(val).then(() => {
                         this.isSettingsBroadcastSet = true
                     })
@@ -29,11 +37,13 @@ export default {
 
     async mounted() {
         miro.onReady(async () => {
-            let state = await miro.__getRuntimeState()
-            if (isEmpty(state)) {
-                await miro.__setRuntimeState(this.settings)
+            // let state = await miro.__getRuntimeState()
+            let settings = sessionStorage.getItem('settings')
+            if (!settings) {
+                // await miro.__setRuntimeState(this.settings)
+                sessionStorage.setItem('settings', JSON.stringify(this.settings))
             } else {
-                this.settings = state
+                this.settings = JSON.parse(settings)
             }
 
             miro.addListener('DATA_BROADCASTED', this.DATA_BROADCASTED)
@@ -95,6 +105,24 @@ export default {
             }
 
             return null
+        },
+
+        async getWidgetTagId_() {
+            let wId_ = []
+
+            let f_ = await miro.board.widgets.get({
+                type: constant.widget.type.FRAME,
+            })
+
+            if (!f_.length) return []
+
+            each(f_, f => {
+                if (f.title.charAt(0) === '#') {
+                    wId_ = wId_.concat(f.childrenIds)
+                }
+            })
+
+            return wId_
         },
     },
 }
