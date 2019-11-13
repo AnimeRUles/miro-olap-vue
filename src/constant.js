@@ -4,6 +4,7 @@ export default {
         type: {
             LINE : 'LINE',
             FRAME: 'FRAME',
+            TEXT : 'TEXT',
         }
     },
 

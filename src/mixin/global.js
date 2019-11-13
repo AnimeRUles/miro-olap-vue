@@ -124,5 +124,20 @@ export default {
 
             return wId_
         },
+
+        async updateWidget(w_) {
+            if (!w_) return
+
+            let wPart_ = []
+            this.getArray(w_).forEach(w => {
+                let wPart = {
+                    id           : w.id,
+                    clientVisible: w.clientVisible,
+                }
+                wPart_.push(wPart)
+            })
+
+            await miro.board.widgets.update(wPart_)
+        },
     },
 }

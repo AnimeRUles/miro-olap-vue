@@ -14,6 +14,7 @@
                     </el-collapse-item>
 
                     <el-collapse-item title="Other" name="Other">
+                        <Other />
                     </el-collapse-item>
 
                 </el-collapse>
@@ -25,12 +26,14 @@
 <script>
     import CreateLine from './CreateLine.vue'
     import Hide       from './Hide.vue'
+    import Other      from './Other.vue'
 
     export default {
         name      : 'LeftSidebar',
         components: {
             CreateLine,
             Hide,
+            Other,
         },
 
         data(){
