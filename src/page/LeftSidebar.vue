@@ -30,7 +30,8 @@
 </template>
 
 <script>
-    import {each} from 'lodash'
+    import {each}   from 'lodash'
+    import constant from '@/const'
 
     export default {
         name      : 'LeftSidebar',
@@ -81,28 +82,52 @@
                 }
 
                 if (wSelect) {
-                    this.selectWidgetEnd(wSelect.id)
+                    this.selectWidgetEnd(wSelect)
                     return
                 }
             },
 
-            async selectWidgetEnd(wId) {
-                let wEndSelect = this.getWidgetObjCustom(
-                    await this.getWidgetById(wId))
+            async selectWidgetEnd(wEnd) {
+                this.log('wEnd', wEnd)
 
                 let w = await miro.board.widgets.create({
-                    type           : 'LINE'
-                    , startWidgetId: this.wStartSelect.id
-                    , endWidgetId  : wEndSelect.id
-                    , style        : {
-                        lineEndStyle: 1,
+                    type         : constant.widget.type.LINE,
+                    startWidgetId: this.wStartSelect.id,
+                    endWidgetId  : wEnd.id,
+                    style        : {
+                        lineEndStyle: 5,
                         lineType    : 2,
+                        lineColor   : '#808080',
                     }
                 })
 
-                await miro.board.widgets.sendBackward(w)
+                let html       = document.createElement('html')
+                html.innerHTML = '<html><head><title>temp</title></head><body>'
+                    + wEnd.text
+                    + '</body></html>'
 
+                //todo check for duplicates
+                // let p_ = html.getElementsByTagName('p');
+
+                let wStart = await this.getWidgetById(this.wStartSelect.id)
+                wEnd.text += this.createTagHtmlElement(wStart).outerHTML
+
+                await miro.board.widgets.update(wEnd)
+
+                await miro.board.widgets.sendBackward(w)
                 await miro.board.selection.selectWidgets(w)
+            },
+
+            createTagHtmlElement(wTag) {
+                let p = document.createElement('p')
+
+                let span                   = document.createElement('span')
+                span.style.backgroundColor = wTag.style.borderColor
+                span.textContent           = ' #' + wTag.plainText + ' '
+
+                p.appendChild(span)
+
+                return p
             },
 
             getWidgetObjCustom(w) {
@@ -119,11 +144,21 @@
             },
 
             async getTagId_() {
-                let f_ = await miro.board.widgets.get({type: 'FRAME', title: '#'})
+                let wId_ = []
+
+                let f_ = await miro.board.widgets.get({
+                    type: constant.widget.type.FRAME,
+                })
 
                 if (!f_.length) return []
 
-                return f_[0].childrenIds
+                each(f_, f => {
+                    if (f.title.charAt(0) === '#') {
+                        wId_ = wId_.concat(f.childrenIds)
+                    }
+                })
+
+                return wId_
             },
 
             async getTagObj_() {
@@ -147,7 +182,8 @@
         justify-content : center;
         align-items     : center;
     }
-    .el-col{
-        padding: 4pt;
+
+    .el-col {
+        padding : 4pt;
     }
 </style>
