@@ -20,7 +20,7 @@ module.exports = {
             filename: 'bottom-bar.html',
         },
         leftSidebar: {
-            entry   : 'src/page/leftSidebar.js',
+            entry   : 'src/page/leftSidebar/leftSidebar.js',
             template: 'public/index.html',
             filename: 'left-sidebar.html',
         },
