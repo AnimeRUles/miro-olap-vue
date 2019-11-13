@@ -1,40 +1,33 @@
 <template>
-    <div id="app">
-        <el-row :gutter="8">
+    <el-row :gutter="8">
+        <el-col>
+            <el-dropdown split-button
+                         :type="(wStartSelect ? 'info' : '')"
+                         @click="selectWidgetStart_begin"
+            >{{(wStartSelect ? wStartSelect.name : 'Choose a start widget')}}
+                <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item v-for="tag in wStart_"
+                                      :key="tag.id"
+                                      @click.native="wStartSelect = getWidgetStartById(tag.id)"
+                    >{{tag.name}}
+                    </el-dropdown-item>
+                </el-dropdown-menu>
+            </el-dropdown>
+        </el-col>
 
-            <el-col style="height: 36pt;"></el-col>
+        <el-col style="text-align: right;">
+            <el-button @click="selectWidgetEnd_begin">Create line</el-button>
+        </el-col>
 
-            <el-col style="text-align: right;">Create line</el-col>
-
-            <el-col style="text-align: right;">
-                <el-dropdown split-button
-                             :type="(wStartSelect ? 'info' : '')"
-                             @click="selectWidgetStart_begin"
-                >{{(wStartSelect ? wStartSelect.name : 'Choose a start widget')}}
-                    <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item v-for="tag in wStart_"
-                                          :key="tag.id"
-                                          @click.native="wStartSelect = getWidgetStartById(tag.id)"
-                        >{{tag.name}}
-                        </el-dropdown-item>
-                    </el-dropdown-menu>
-                </el-dropdown>
-            </el-col>
-
-            <el-col style="text-align: right;">
-                <el-button @click="selectWidgetEnd_begin">Create line</el-button>
-            </el-col>
-
-        </el-row>
-    </div>
+    </el-row>
 </template>
 
 <script>
     import {each}   from 'lodash'
-    import constant from '@/const'
+    import constant from '@/constant'
 
     export default {
-        name      : 'LeftSidebar',
+        name      : 'CreateLine',
         components: {},
 
         data() {
@@ -88,8 +81,6 @@
             },
 
             async selectWidgetEnd(wEnd) {
-                this.log('wEnd', wEnd)
-
                 let w = await miro.board.widgets.create({
                     type         : constant.widget.type.LINE,
                     startWidgetId: this.wStartSelect.id,
@@ -177,13 +168,4 @@
 </script>
 
 <style>
-    #app {
-        display         : flex;
-        justify-content : center;
-        align-items     : center;
-    }
-
-    .el-col {
-        padding : 4pt;
-    }
 </style>
