@@ -56,7 +56,7 @@
             },
 
             openBottomPanel() {
-                miro.board.ui.openBottomPanel('bottom-bar.html', {width: 160})
+                miro.board.ui.openBottomPanel('bottom-bar.html', {width: 140})
             },
 
             async showHideLine(e) {
@@ -108,7 +108,7 @@
                         })
                     }
                 })
-                this.update(widgetLine_)
+                this.updateWidget(widgetLine_)
             },
 
             async showWidget() {
@@ -126,22 +126,7 @@
                         wLine.clientVisible = true
                     }
                 })
-                this.update(widgetLine_)
-            },
-
-            update(widget_) {
-                if (!widget_) return
-
-                let widgetPart_ = []
-                this.getArray(widget_).forEach(widget => {
-                    let widgetPart = {
-                        id           : widget.id,
-                        clientVisible: widget.clientVisible,
-                    }
-                    widgetPart_.push(widgetPart)
-                })
-
-                miro.board.widgets.update(widgetPart_)
+                this.updateWidget(widgetLine_)
             },
         },
     }

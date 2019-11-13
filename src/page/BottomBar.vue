@@ -4,25 +4,24 @@
                    title="show only widget lines"/>
 
         <el-button @click="openLeftSidebar"
-                   style="margin-left: 8pt"
                    size="mini"
                    title="create..."
                    icon="el-icon-plus"
-                   circle>
-        </el-button>
+                   circle />
 
-        <el-button @click="selectLineAll"
-                   style="margin-left: 8pt"
+        <el-button @click="showWidgetAll"
                    size="mini"
-                   title="select all lines"
-                   round>sal
-        </el-button>
+                   title="show all widgets"
+                   icon="el-icon-view"
+                   circle />
     </div>
 </template>
 
 <script>
+    import constant from '@/constant'
+
     export default {
-        name      : 'BottomPanel',
+        name      : 'BottomBar',
         components: {},
 
         data() {
@@ -42,9 +41,12 @@
                 miro.board.ui.openLeftSidebar('left-sidebar.html', {width: 180})
             },
 
-            async selectLineAll() {
-                await miro.board.selection.selectWidgets(
-                    await miro.board.widgets.get({type: 'LINE'}))
+            async showWidgetAll() {
+                const widgetLine_ = await miro.board.widgets.get()
+                widgetLine_.forEach(wLine => {
+                    wLine.clientVisible = true
+                })
+                this.updateWidget(widgetLine_)
             },
         }
     }
@@ -55,5 +57,9 @@
         display         : flex;
         justify-content : center;
         align-items     : center;
+    }
+
+    .el-button{
+        margin-left: 8pt
     }
 </style>
