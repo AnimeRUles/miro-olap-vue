@@ -15,46 +15,46 @@
 </template>
 
 <script>
-    import {each}   from 'lodash'
+    import { each } from 'lodash'
     import constant from '@/constant'
 
     export default {
         name      : 'Other',
         components: {},
 
-        data() {
+        data(){
             return {
                 widgetTypeSelect: '',
                 widgetType_     : [
                     {
                         value: constant.widget.type.LINE,
                         label: constant.widget.type.LINE
-                    },
-                    {
+                    }, {
                         value: constant.widget.type.FRAME,
                         label: constant.widget.type.FRAME
-                    },
-                    {
+                    }, {
                         value: constant.widget.type.TEXT,
                         label: constant.widget.type.TEXT
                     },
-                ]
+                ],
             }
         },
 
-        mounted() {
+        mounted(){
+        },
 
+        destroyed(){
         },
 
         methods: {
-            async selectWidgetType() {
-                if (!this.widgetTypeSelect) {
-                    miro.showErrorNotification('Select widget type')
+            async selectWidgetType(){
+                if( ! this.widgetTypeSelect ){
+                    miro.showErrorNotification( 'Select widget type' )
                     return
                 }
 
                 await miro.board.selection.selectWidgets(
-                    await miro.board.widgets.get({type: this.widgetTypeSelect}))
+                    await miro.board.widgets.get( { type: this.widgetTypeSelect } ) )
             },
         }
     }

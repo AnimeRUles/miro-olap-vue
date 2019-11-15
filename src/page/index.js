@@ -7,8 +7,8 @@ common.registerHotReload()
 
 Vue.config.productionTip = false
 
-Vue.mixin(globalMixin)
+Vue.mixin( globalMixin )
 
-new Vue({
-    render: h => h(App),
-}).$mount('#app')
+new Vue( {
+    render: h => h( App ),
+} ).$mount( '#app' )

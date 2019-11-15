@@ -7,13 +7,13 @@
                    size="mini"
                    title="create..."
                    icon="el-icon-plus"
-                   circle />
+                   circle/>
 
         <el-button @click="showWidgetAll"
                    size="mini"
                    title="show all widgets"
                    icon="el-icon-view"
-                   circle />
+                   circle/>
     </div>
 </template>
 
@@ -24,29 +24,29 @@
         name      : 'BottomBar',
         components: {},
 
-        data() {
+        data(){
             return {}
         },
 
-        mounted() {
-            miro.onReady(async () => {
-                if (this.isDevelopment()) {
+        mounted(){
+            miro.onReady( async() => {
+                if( this.isDevelopment() ){
                     this.openLeftSidebar()
                 }
-            })
+            } )
         },
 
         methods: {
-            openLeftSidebar() {
-                miro.board.ui.openLeftSidebar('left-sidebar.html', {width: 180})
+            openLeftSidebar(){
+                miro.board.ui.openLeftSidebar( 'left-sidebar.html'/*, {width: 500}*/ )
             },
 
-            async showWidgetAll() {
+            async showWidgetAll(){
                 const widgetLine_ = await miro.board.widgets.get()
-                widgetLine_.forEach(wLine => {
+                widgetLine_.forEach( wLine => {
                     wLine.clientVisible = true
-                })
-                this.updateWidget(widgetLine_)
+                } )
+                this.updateWidget( widgetLine_ )
             },
         }
     }
@@ -59,7 +59,7 @@
         align-items     : center;
     }
 
-    .el-button{
-        margin-left: 8pt
+    .el-button {
+        margin-left : 8pt
     }
 </style>

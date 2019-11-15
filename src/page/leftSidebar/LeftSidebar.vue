@@ -2,7 +2,7 @@
     <div id="app">
         <el-row :gutter="8">
             <el-col style="height: 36pt;"></el-col>
-            <el-col>
+            <el-col style="height: 100vh;overflow: auto">
                 <el-collapse v-model="activeTab_">
 
                     <el-collapse-item title="Create line" name="CreateLine">
@@ -14,7 +14,11 @@
                     </el-collapse-item>
 
                     <el-collapse-item title="Other" name="Other">
-                        <Other />
+                        <Other/>
+                    </el-collapse-item>
+
+                    <el-collapse-item title="Widget" name="Widget">
+                        <Widget/>
                     </el-collapse-item>
 
                 </el-collapse>
@@ -27,6 +31,7 @@
     import CreateLine from './CreateLine.vue'
     import Hide       from './Hide.vue'
     import Other      from './Other.vue'
+    import Widget     from './Widget.vue'
 
     export default {
         name      : 'LeftSidebar',
@@ -34,6 +39,7 @@
             CreateLine,
             Hide,
             Other,
+            Widget,
         },
 
         data(){
@@ -42,6 +48,7 @@
                     'CreateLine',
                     'Hide',
                     'Other',
+                    'Widget',
                 ]
             }
         }
