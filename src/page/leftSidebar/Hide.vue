@@ -1,31 +1,28 @@
 <template>
     <el-row :gutter="8">
         <el-col>
-            <el-checkbox v-model="settings.hide.lineTagIs" label="Hide tag line" border />
+            <el-checkbox v-model="settings.hide.lineTagIs" label="Hide tag line" border/>
         </el-col>
     </el-row>
 </template>
 
 <script>
-    import {each}   from 'lodash'
+    import { each } from 'lodash'
     import constant from '@/constant'
 
     export default {
         name      : 'Hide',
         components: {},
 
-        data() {
-            return {
-            }
+        data(){
+            return {}
         },
 
-        mounted() {
+        mounted(){
 
         },
 
-        methods: {
-
-        }
+        methods: {}
     }
 </script>
 
