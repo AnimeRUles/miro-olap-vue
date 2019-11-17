@@ -1,18 +1,24 @@
 <template>
     <el-row :gutter="8">
         <el-col v-if="wSelect">
-            <div @click="blinkWidget(wSelect)">
-                widget id: {{ wSelect.id }}
+            <div @click="highlightWidget(wSelect)">
+                <el-divider content-position="right">
+                    {{ wSelect.id }}
+                    <i class="el-icon-star-off"></i>
+                </el-divider>
+                <div v-html="wSelect.text"></div>
             </div>
 
-            <div>
-                <div v-for="wChild in wChild_"
-                     :key="wChild.id"
-                     @click="blinkWidget(wChild)">
+            <div v-for="wChild in wChild_"
+                 :key="wChild.w.id"
+                 @click="highlightWidget(wChild.w)">
 
-                    <el-divider></el-divider>
-                    <div v-html="wChild.text"></div>
-                </div>
+                <el-divider content-position="right">
+                    {{ wChild.w.id }}
+                    <i :class="getLineDirectionIcon(wChild.lineDirection)"></i>
+                    <i class="el-icon-star-off"></i>
+                </el-divider>
+                <div v-html="wChild.w.text"></div>
             </div>
         </el-col>
     </el-row>
@@ -66,17 +72,45 @@
                 )
 
                 each( wLine_, async wLine => {
-                    let wChildId = (
-                        wLine.startWidgetId === this.wSelect.id
+                    let lineDirection = ( wLine.startWidgetId === this.wSelect.id
+                        ? constant.lineDirection.OUT
+                        : constant.lineDirection.IN )
+                    let wChildId      = ( lineDirection === constant.lineDirection.OUT
                             ? wLine.endWidgetId
                             : wLine.startWidgetId
                     )
-                    let wChild   = await this.getWidgetById( wChildId )
-                    this.wChild_.push( wChild )
+                    let wChild        = await this.getWidgetById( wChildId )
+                    this.wChild_.push( {
+                        w: wChild,
+                        lineDirection,
+                    } )
+                } )
+            },
+
+            getLineDirectionIcon(lineDirection){
+                return (lineDirection === constant.lineDirection.OUT
+                    ? 'el-icon-back'
+                    : 'el-icon-right')
+            },
+
+            async highlightWidget( w ){
+                await this.goToWidget( w )
+                await this.blinkWidget( w )
+            },
+
+            async goToWidget( w ){
+                let viewport = await miro.board.viewport.getViewport()
+
+                await miro.board.viewport.setViewportWithAnimation( {
+                    x     : w.bounds.left - ( viewport.width / 2 ),
+                    y     : w.bounds.top - ( viewport.height / 2 ),
+                    width : viewport.width,
+                    height: viewport.height,
                 } )
             },
 
             async blinkWidget( w ){
+
                 let w_ = [].concat( await miro.board.widgets.get( {
                     type         : constant.widget.type.LINE,
                     startWidgetId: this.wSelect.id,
@@ -87,8 +121,6 @@
                     endWidgetId  : this.wSelect.id,
                 } ) ).concat( w )
 
-                miro.board.widgets.__blinkWidget( w_ )
-                await this.sleep( 500 )
                 miro.board.widgets.__blinkWidget( w_ )
             },
         }

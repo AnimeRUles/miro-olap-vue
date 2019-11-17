@@ -5,8 +5,8 @@
 
         <el-button @click="openLeftSidebar"
                    size="mini"
-                   title="create..."
-                   icon="el-icon-plus"
+                   title="additionally"
+                   icon="el-icon-more"
                    circle/>
 
         <el-button @click="showWidgetAll"

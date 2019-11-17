@@ -3,6 +3,7 @@
 </template>
 
 <script>
+    import { each } from 'lodash'
     import common   from '../common'
     import constant from '@/constant'
 
@@ -87,18 +88,16 @@
             },
 
             async hideWidget( widget_ ){
-                const wTagId_     = await this.getWidgetTagId_()
-                const widgetLine_ = await miro.board.widgets.get( {
+                const wTagId_ = await this.getWidgetTagId_()
+                const wLine_  = await miro.board.widgets.get( {
                     type: constant.widget.type.LINE
                 } )
-                widgetLine_.forEach( wLine => {
+                wLine_.forEach( wLine => {
                     wLine.clientVisible = false
 
                     if( this.settings.hide.lineTagIs
-                        && (
-                            wTagId_.includes( wLine.startWidgetId )
-                            || wTagId_.includes( wLine.endWidgetId )
-                        )
+                        && ( wTagId_.includes( wLine.startWidgetId )
+                            || wTagId_.includes( wLine.endWidgetId ) )
                     ){
                         wLine.clientVisible = false
                     }else{
@@ -110,27 +109,25 @@
                         } )
                     }
                 } )
-                this.updateWidget( widgetLine_ )
+                this.updateWidget( wLine_ )
             },
 
             async showWidget(){
-                const wTagId_     = await this.getWidgetTagId_()
-                const widgetLine_ = await miro.board.widgets.get( {
+                const wTagId_ = await this.getWidgetTagId_()
+                const wLine_  = await miro.board.widgets.get( {
                     type: constant.widget.type.LINE
                 } )
-                widgetLine_.forEach( wLine => {
+                wLine_.forEach( wLine => {
                     if( this.settings.hide.lineTagIs
-                        && (
-                            wTagId_.includes( wLine.startWidgetId )
-                            || wTagId_.includes( wLine.endWidgetId )
-                        )
+                        && ( wTagId_.includes( wLine.startWidgetId )
+                            || wTagId_.includes( wLine.endWidgetId ) )
                     ){
                         wLine.clientVisible = false
                     }else{
                         wLine.clientVisible = true
                     }
                 } )
-                this.updateWidget( widgetLine_ )
+                this.updateWidget( wLine_ )
             },
         },
     }

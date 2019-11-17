@@ -131,6 +131,11 @@ export default {
             return wId_
         },
 
+        async isWidgetTagById( wId ){
+            let wTagId_ = await this.getWidgetTagId_()
+            return wTagId_.includes( wId )
+        },
+
         async updateWidget( w_ ){
             if( ! w_ ) return
 
