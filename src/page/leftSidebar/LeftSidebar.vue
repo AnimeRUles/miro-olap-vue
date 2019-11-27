@@ -47,7 +47,7 @@
                 activeTab_: [
                     'CreateLine',
                     'Hide',
-                    'Other',
+                    // 'Other',
                     'Widget',
                 ]
             }

@@ -2,9 +2,20 @@ export default {
 
     widget: {
         type: {
-            LINE : 'LINE',
-            FRAME: 'FRAME',
-            TEXT : 'TEXT',
+            LINE     : 'LINE',
+            FRAME    : 'FRAME',
+            TEXT     : 'TEXT',
+            IMAGE    : 'IMAGE',
+            STICKER  : 'STICKER',
+            SHAPE    : 'SHAPE',
+            WEBSCREEN: 'WEBSCREEN',
+            CURVE    : 'CURVE',
+            EMBED    : 'EMBED',
+            PREVIEW  : 'PREVIEW',
+            CARD     : 'CARD',
+            DOCUMENT : 'DOCUMENT',
+            MOCKUP   : 'MOCKUP',
+            COMMENT  : 'COMMENT',
         }
     },
 
