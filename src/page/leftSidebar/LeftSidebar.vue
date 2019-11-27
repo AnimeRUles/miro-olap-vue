@@ -2,7 +2,7 @@
     <div id="app">
         <el-row :gutter="8">
             <el-col style="height: 36pt;"></el-col>
-            <el-col style="height: 100vh;overflow: auto">
+            <el-col style="height: calc(100vh - 48pt);overflow: auto">
                 <el-collapse v-model="activeTab_">
 
                     <el-collapse-item title="Create line" name="CreateLine">
@@ -47,7 +47,7 @@
                 activeTab_: [
                     'CreateLine',
                     'Hide',
-                    'Other',
+                    // 'Other',
                     'Widget',
                 ]
             }

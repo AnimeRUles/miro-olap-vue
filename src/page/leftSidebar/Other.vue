@@ -25,22 +25,17 @@
         data(){
             return {
                 widgetTypeSelect: '',
-                widgetType_     : [
-                    {
-                        value: constant.widget.type.LINE,
-                        label: constant.widget.type.LINE
-                    }, {
-                        value: constant.widget.type.FRAME,
-                        label: constant.widget.type.FRAME
-                    }, {
-                        value: constant.widget.type.TEXT,
-                        label: constant.widget.type.TEXT
-                    },
-                ],
+                widgetType_     : [],
             }
         },
 
         mounted(){
+            each( constant.widget.type, type => {
+                this.widgetType_.push( {
+                    value: type,
+                    label: type
+                } )
+            } )
         },
 
         destroyed(){
