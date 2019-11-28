@@ -140,11 +140,6 @@ export default {
             return wId_
         },
 
-        async isWidgetTagById( wId ){
-            let wTagId_ = await this.getWidgetTagId_()
-            return wTagId_.includes( wId )
-        },
-
         async updateWidget( w_ ){
             if( ! w_ ) return
 
@@ -158,6 +153,24 @@ export default {
             } )
 
             await miro.board.widgets.update( wPart_ )
+        },
+
+        async getWidgetIdByFrame_( char ){
+            let wId_ = []
+
+            let f_ = await miro.board.widgets.get( {
+                type: constant.widget.type.FRAME,
+            } )
+
+            if( ! f_.length ) return []
+
+            each( f_, f => {
+                if( f.title.charAt( 0 ) === char ){
+                    wId_ = wId_.concat( f.childrenIds )
+                }
+            } )
+
+            return wId_
         },
     },
 }

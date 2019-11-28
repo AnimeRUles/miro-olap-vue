@@ -1,5 +1,24 @@
 <template>
     <el-row :gutter="8">
+
+        <el-col>
+            <el-button @click="refreshStyle"
+                       icon="el-icon-refresh"
+                       style="margin-right: 1em"></el-button>
+
+            <el-select v-model="style.combobox.value"
+                       clearable
+                       placeholder="select style">
+
+                <el-option
+                        v-for="v in style.combobox.value_"
+                        :key="v.value"
+                        :label="v.label"
+                        :value="v.value">
+                </el-option>
+            </el-select>
+        </el-col>
+
         <el-col>
             <el-dropdown split-button
                          :type="(wStartSelect ? 'info' : '')"
@@ -19,6 +38,10 @@
             <el-button @click="selectWidgetEnd_begin">Create line</el-button>
         </el-col>
 
+        <el-col style="text-align: right;">
+            <el-checkbox v-model="isAddTag" label="Add tag" border/>
+        </el-col>
+
     </el-row>
 </template>
 
@@ -32,18 +55,65 @@
 
         data(){
             return {
+                style: {
+                    w_: {},
+                    w : null,
+
+                    combobox: {
+                        value_: [],
+                        value : '',
+                    }
+                },
+
                 wStart_     : [],
                 wStartSelect: null,
+
+                isAddTag: true,
             }
+        },
+
+        watch: {
+            'style.w_': {
+                deep   : true,
+                handler: async function( newVal, oldVal ){
+                    //bug newVal properties does not exist at the moment
+                    await this.sleep( 1000 )
+
+                    let _ = []
+                    each( newVal, w => {
+                        let title = w.text || w.type + '-' + w.id
+                        if( w.type === constant.widget.type.LINE && w.captions.length ){
+                            title = w.captions[ 0 ].text
+                        }
+
+                        _.push( {
+                            value: w.id,
+                            label: title,
+                        } )
+                    } )
+                    this.style.combobox.value_ = _
+                },
+            },
+
+            'style.combobox.value': function( newVal, oldVal ){
+                this.style.w = this.style.w_[ newVal ]
+            },
         },
 
         mounted(){
             miro.onReady( async() => {
-                this.wStart_ = await this.getTagObj_()
+                this.refreshStyle()
+                this.wStart_  = await this.getTagObj_()
             } )
         },
 
         methods: {
+            async refreshStyle(){
+                console.log('refreshStyle')
+                this.style.combobox.value = null
+                this.style.w_ = await this.getStyleObj_()
+            },
+
             async selectWidgetStart_begin(){
                 let wSelect = await this.getWidgetSelectFirst()
                 if( wSelect ){
@@ -81,15 +151,18 @@
             },
 
             async selectWidgetEnd( wEnd ){
-                let w = await miro.board.widgets.create( {
-                    type         : constant.widget.type.LINE,
-                    startWidgetId: this.wStartSelect.id,
-                    endWidgetId  : wEnd.id,
-                    style        : {
+                let style = ( this.style.w
+                    ? this.style.w.style
+                    : {
                         lineEndStyle: 5,
                         lineType    : 2,
                         lineColor   : '#808080',
-                    }
+                    } )
+                let w     = await miro.board.widgets.create( {
+                    type         : constant.widget.type.LINE,
+                    startWidgetId: this.wStartSelect.id,
+                    endWidgetId  : wEnd.id,
+                    style
                 } )
 
                 let html       = document.createElement( 'html' )
@@ -101,7 +174,9 @@
                 // let p_ = html.getElementsByTagName('p');
 
                 let wStart = await this.getWidgetById( this.wStartSelect.id )
-                wEnd.text += this.createTagHtmlElement( wStart ).outerHTML
+                if( this.isAddTag ){
+                    wEnd.text += this.createTagHtmlElement( wStart ).outerHTML
+                }
 
                 await miro.board.widgets.update( wEnd )
 
@@ -134,35 +209,28 @@
                 return this.wStart_.find( ( el ) => el.id === id ) || null
             },
 
-            async getTagId_(){
-                let wId_ = []
-
-                let f_ = await miro.board.widgets.get( {
-                    type: constant.widget.type.FRAME,
-                } )
-
-                if( ! f_.length ) return []
-
-                each( f_, f => {
-                    if( f.title.charAt( 0 ) === '#' ){
-                        wId_ = wId_.concat( f.childrenIds )
-                    }
-                } )
-
-                return wId_
-            },
-
             async getTagObj_(){
                 let _ = []
 
-                each( await this.getTagId_(), async wId => {
+                each( await this.getWidgetIdByFrame_( '#' ), async wId => {
                     _.push( this.getWidgetObjCustom(
                         await this.getWidgetById( wId )
                     ) )
                 } )
 
                 return _
-            }
+            },
+
+            async getStyleObj_(){
+                let _ = {}
+
+                each( await this.getWidgetIdByFrame_( '*' ), async wId => {
+                    let w     = await this.getWidgetById( wId )
+                    _[ w.id ] = w
+                } )
+
+                return _
+            },
         }
     }
 </script>

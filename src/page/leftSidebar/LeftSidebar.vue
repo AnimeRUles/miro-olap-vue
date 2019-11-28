@@ -46,7 +46,7 @@
             return {
                 activeTab_: [
                     'CreateLine',
-                    'Hide',
+                    // 'Hide',
                     // 'Other',
                     'Widget',
                 ]
