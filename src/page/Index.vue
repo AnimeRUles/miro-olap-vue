@@ -40,7 +40,7 @@
                                 bottomBar: {
                                     title  : 'AnimeRUles',
                                     svgIcon,
-                                    onClick: function(){
+                                    onClick: async() => {
                                         self.openBottomPanel()
                                     },
                                 }
@@ -56,8 +56,10 @@
                 } )
             },
 
-            openBottomPanel(){
-                miro.board.ui.openBottomPanel( 'bottom-bar.html', { width: 140 } )
+            async openBottomPanel(){
+                if( await this.authorize() ){
+                    miro.board.ui.openBottomPanel( 'bottom-bar.html', { width: 140 } )
+                }
             },
 
             async showHideLine( e ){

@@ -67,6 +67,15 @@ export default {
             }
         },
 
+        async authorize(){
+            if( ! await miro.isAuthorized() ){
+                return await miro.board.ui.openModal( 'auth/authorize.html'
+                    , { width: 400, height: 120 } ) === 'success'
+            }
+
+            return true
+        },
+
         log( ...val ){
             console.log( ...val, this.$el.baseURI )
         },
