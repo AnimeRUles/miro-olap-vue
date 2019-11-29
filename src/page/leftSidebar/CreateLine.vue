@@ -1,29 +1,66 @@
 <template>
     <el-row :gutter="8">
+
         <el-col>
-            <el-dropdown split-button
-                         :type="(wStartSelect ? 'info' : '')"
-                         @click="selectWidgetStart_begin"
-            >{{(wStartSelect ? wStartSelect.name : 'Choose a start widget')}}
-                <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item v-for="tag in wStart_"
-                                      :key="tag.id"
-                                      @click.native="wStartSelect = getWidgetStartById(tag.id)"
-                    >{{tag.name}}
-                    </el-dropdown-item>
-                </el-dropdown-menu>
-            </el-dropdown>
+            <el-button @click="refreshStyle"
+                       icon="el-icon-refresh"
+                       style="margin: 0; padding: 0; margin-right: 1em"
+                       type="text"></el-button>
+
+            <el-select v-model="style.wId"
+                       clearable
+                       placeholder="select style">
+
+                <el-option
+                        v-for="w in style.w_"
+                        :key="w.id"
+                        :label="getWidgetLabel(w)"
+                        :value="w.id">
+                </el-option>
+            </el-select>
+        </el-col>
+
+        <el-col>
+            <el-button @click="addWidgetStart"
+                       icon="el-icon-circle-plus-outline"
+                       style="margin: 0; padding: 0; margin-right: 1em"
+                       type="text"></el-button>
+
+            <el-button @click="refreshTag"
+                       icon="el-icon-refresh"
+                       style="margin: 0; padding: 0; margin-right: 1em"
+                       type="text"></el-button>
+
+            <el-select v-model="widget.start.wId"
+                       clearable
+                       placeholder="select widget start">
+
+                <el-option
+                        v-for="w in widget.start.w_"
+                        :key="w.id"
+                        :label="getWidgetLabel(w)"
+                        :value="w.id">
+                </el-option>
+            </el-select>
         </el-col>
 
         <el-col style="text-align: right;">
-            <el-button @click="selectWidgetEnd_begin">Create line</el-button>
+            <el-checkbox v-model="isAddTag"
+                         label="Add tag"
+                         border
+                         style="margin-right: 1em"/>
+
+            <el-button @click="addLine">Create line</el-button>
+        </el-col>
+
+        <el-col style="text-align: right;">
+            <el-button @click="applyWidgetStyle">Apply style</el-button>
         </el-col>
 
     </el-row>
 </template>
 
 <script>
-    import { each } from 'lodash'
     import constant from '@/constant'
 
     export default {
@@ -32,38 +69,105 @@
 
         data(){
             return {
-                wStart_     : [],
-                wStartSelect: null,
+                style: {
+                    w_: {},
+                    w : null,
+
+                    wId: null,
+                },
+
+                widget: {
+                    start: {
+                        w_: [],
+                        w : null,
+
+                        wId: null,
+                    }
+                },
+
+                isAddTag: true,
             }
         },
 
+        watch: {
+            'style.wId'       : function( newVal, oldVal ){
+                this.style.w = this.style.w_[ newVal ]
+            },
+            'widget.start.wId': function( newVal, oldVal ){
+                this.widget.start.w = this.widget.start.w_[ newVal ]
+            },
+        },
+
         mounted(){
-            miro.onReady( async() => {
-                this.wStart_ = await this.getTagObj_()
+            miro.onReady( () => {
+                this.refreshStyle()
+                this.refreshTag()
             } )
         },
 
         methods: {
-            async selectWidgetStart_begin(){
-                let wSelect = await this.getWidgetSelectFirst()
-                if( wSelect ){
-                    this.selectWidgetStart( wSelect.id )
+            getWidgetLabel( w ){
+                let title = w.plainText || w.type + '-' + w.id
+                if( w.type === constant.widget.type.LINE && w.captions.length ){
+                    title = w.captions[ 0 ].text
+                }
+
+                return title
+            },
+
+            //region style
+            async refreshStyle(){
+                this.style.wId = null
+                this.style.w_  = await this.getWidgetById_Object_(
+                    await this.getWidgetStyleId_() )
+            },
+
+            async applyWidgetStyle(){
+                if( ! this.style.w ){
+                    miro.showErrorNotification( 'Choose style' )
                     return
                 }
-            },
 
-            async selectWidgetStart( wId ){
-                let w      = await this.getWidgetById( wId ),
-                    wStart = this.getWidgetStartById( w.id )
-                if( ! wStart ){
-                    wStart = this.getWidgetObjCustom( w )
-                    this.wStart_.push( wStart )
+                let w_ = await this.getWidgetSelect_()
+                if( ! w_.length ){
+                    miro.showErrorNotification( 'Choose widget' )
+                    return
                 }
-                this.wStartSelect = wStart
+
+                let isErrorType = false
+                for( const w of w_ ){
+                    if( w.type !== this.style.w.type ){
+                        isErrorType = true
+                        continue
+                    }
+                    await miro.board.widgets.update( {
+                        id   : w.id,
+                        style: this.style.w.style,
+                    } )
+                }
+
+                if( isErrorType ){
+                    miro.showErrorNotification(
+                        'Widgets with a different type are not updated' )
+                }
+            },
+            //endregion
+
+            //region tag
+            async addWidgetStart(){
+                let wSelect = await this.getWidgetSelectFirst()
+
+                this.$set( this.widget.start.w_, wSelect.id, wSelect )
             },
 
-            async selectWidgetEnd_begin(){
-                if( ! this.wStartSelect ){
+            async refreshTag(){
+                this.widget.start.wId = null
+                this.widget.start.w_  = await this.getWidgetById_Object_(
+                    await this.getWidgetTagId_() )
+            },
+
+            async addLine(){
+                if( ! this.widget.start.w ){
                     miro.showErrorNotification( 'Choose a start widget' )
                     return
                 }
@@ -74,36 +178,37 @@
                     return
                 }
 
-                if( wSelect ){
-                    this.selectWidgetEnd( wSelect )
-                    return
+                let style = null
+                if( this.style.w ){
+                    if( this.style.w.type !== constant.widget.type.LINE ){
+                        miro.showErrorNotification(
+                            'Select the widget line style or clear the style' )
+                        return
+                    }
+                    style = this.style.w.style
                 }
-            },
 
-            async selectWidgetEnd( wEnd ){
                 let w = await miro.board.widgets.create( {
                     type         : constant.widget.type.LINE,
-                    startWidgetId: this.wStartSelect.id,
-                    endWidgetId  : wEnd.id,
-                    style        : {
-                        lineEndStyle: 5,
-                        lineType    : 2,
-                        lineColor   : '#808080',
-                    }
+                    startWidgetId: this.widget.start.w.id,
+                    endWidgetId  : wSelect.id,
+                    style
                 } )
 
                 let html       = document.createElement( 'html' )
                 html.innerHTML = '<html><head><title>temp</title></head><body>'
-                    + wEnd.text
+                    + wSelect.text
                     + '</body></html>'
 
                 //todo check for duplicates
                 // let p_ = html.getElementsByTagName('p');
 
-                let wStart = await this.getWidgetById( this.wStartSelect.id )
-                wEnd.text += this.createTagHtmlElement( wStart ).outerHTML
+                let wStart = await this.getWidgetById( this.widget.start.w.id )
+                if( this.isAddTag ){
+                    wSelect.text += this.createTagHtmlElement( wStart ).outerHTML
+                }
 
-                await miro.board.widgets.update( wEnd )
+                await miro.board.widgets.update( wSelect )
 
                 await miro.board.widgets.sendBackward( w )
                 // await miro.board.selection.selectWidgets(w)
@@ -120,49 +225,7 @@
 
                 return p
             },
-
-            getWidgetObjCustom( w ){
-                if( ! w ) return null
-
-                return {
-                    id  : w.id,
-                    name: w.plainText,
-                }
-            },
-
-            getWidgetStartById( id ){
-                return this.wStart_.find( ( el ) => el.id === id ) || null
-            },
-
-            async getTagId_(){
-                let wId_ = []
-
-                let f_ = await miro.board.widgets.get( {
-                    type: constant.widget.type.FRAME,
-                } )
-
-                if( ! f_.length ) return []
-
-                each( f_, f => {
-                    if( f.title.charAt( 0 ) === '#' ){
-                        wId_ = wId_.concat( f.childrenIds )
-                    }
-                } )
-
-                return wId_
-            },
-
-            async getTagObj_(){
-                let _ = []
-
-                each( await this.getTagId_(), async wId => {
-                    _.push( this.getWidgetObjCustom(
-                        await this.getWidgetById( wId )
-                    ) )
-                } )
-
-                return _
-            }
+            //endregion
         }
     }
 </script>
