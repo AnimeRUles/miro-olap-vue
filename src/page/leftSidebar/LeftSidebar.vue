@@ -5,7 +5,7 @@
             <el-col style="height: calc(100vh - 48pt);overflow: auto">
                 <el-collapse v-model="activeTab_">
 
-                    <el-collapse-item title="Create line" name="CreateLine">
+                    <el-collapse-item title="Create/Update" name="CreateLine">
                         <CreateLine/>
                     </el-collapse-item>
 
@@ -69,5 +69,14 @@
     .el-col {
         padding    : 4pt;
         text-align : right;
+    }
+
+    .el-collapse-item__header {
+        height      : 32px;
+        line-height : 32px;
+    }
+
+    .el-select-dropdown{
+        max-width: 300px;
     }
 </style>

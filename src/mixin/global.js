@@ -80,7 +80,7 @@ export default {
             console.log( ...val, this.$el.baseURI )
         },
 
-        sleep( ms ){
+        sleep( ms = 1000 ){
             return new Promise( resolve => setTimeout( resolve, ms ) )
         },
 
@@ -112,6 +112,17 @@ export default {
             return null
         },
 
+        async getWidgetById_Object_( wId_ ){
+            let _ = {}
+
+            for( const wId of wId_ ){
+                let w     = await this.getWidgetById( wId )
+                _[ w.id ] = w
+            }
+
+            return _
+        },
+
         async getWidgetSelectFirst(){
             let w_ = await miro.board.selection.get()
 
@@ -122,7 +133,19 @@ export default {
             return null
         },
 
+        async getWidgetSelect_(){
+            return await miro.board.selection.get()
+        },
+
         async getWidgetTagId_(){
+            return await this.getWidgetIdByFrame_( '#' )
+        },
+
+        async getWidgetStyleId_(){
+            return await this.getWidgetIdByFrame_( '*' )
+        },
+
+        async getWidgetIdByFrame_( char ){
             let wId_ = []
 
             let f_ = await miro.board.widgets.get( {
@@ -132,7 +155,7 @@ export default {
             if( ! f_.length ) return []
 
             each( f_, f => {
-                if( f.title.charAt( 0 ) === '#' ){
+                if( f.title.charAt( 0 ) === char ){
                     wId_ = wId_.concat( f.childrenIds )
                 }
             } )
@@ -153,24 +176,6 @@ export default {
             } )
 
             await miro.board.widgets.update( wPart_ )
-        },
-
-        async getWidgetIdByFrame_( char ){
-            let wId_ = []
-
-            let f_ = await miro.board.widgets.get( {
-                type: constant.widget.type.FRAME,
-            } )
-
-            if( ! f_.length ) return []
-
-            each( f_, f => {
-                if( f.title.charAt( 0 ) === char ){
-                    wId_ = wId_.concat( f.childrenIds )
-                }
-            } )
-
-            return wId_
         },
     },
 }
